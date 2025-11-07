@@ -1,0 +1,52 @@
+{%- doc -%}
+  Renders a single Hana program card with icon, heading, copy and link.
+
+  @param icon [ImageDrop]
+  @param title [String]
+  @param text [String]
+  @param link_label [String]
+  @param link_url [String]
+{%- enddoc -%}
+
+{% assign icon = icon %}
+{% assign title = title %}
+{% assign text = text %}
+{% assign link_label = link_label %}
+{% assign link_url = link_url %}
+
+<div class="group flex h-full flex-col justify-between rounded-3xl border border-rose-100 bg-white/80 p-8 shadow-sm backdrop-blur-sm transition hover:-translate-y-1 hover:shadow-lg">
+  <div class="space-y-4">
+    {% if icon %}
+      <div class="h-12 w-12 overflow-hidden rounded-full bg-rose-100/70 p-3">
+        <img
+          src="{{ icon | image_url: width: 120 }}"
+          alt="{{ icon.alt | default: title | escape }}"
+          loading="lazy"
+          class="h-full w-full object-contain"
+        >
+      </div>
+    {% endif %}
+
+    {% if title != blank %}
+      <h3 class="text-lg font-semibold tracking-tight text-neutral-900">
+        {{ title }}
+      </h3>
+    {% endif %}
+
+    {% if text != blank %}
+      <p class="text-sm leading-relaxed text-neutral-600">
+        {{ text }}
+      </p>
+    {% endif %}
+  </div>
+
+  {% if link_label != blank and link_url != blank %}
+    <a
+      href="{{ link_url }}"
+      class="mt-6 inline-flex items-center text-sm font-medium text-rose-500 transition group-hover:text-rose-600"
+    >
+      {{ link_label }}
+      <span class="ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
+    </a>
+  {% endif %}
+</div>
