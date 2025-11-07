@@ -1,0 +1,855 @@
+{%- liquid
+  assign hero_image = section.settings.hero_background
+  assign hero_image_mobile = section.settings.hero_background_mobile | default: hero_image
+  assign hero_badge = section.settings.hero_badge
+  assign hero_heading = section.settings.hero_heading
+  assign hero_subheading = section.settings.hero_subheading
+  assign hero_description = section.settings.hero_description
+  assign primary_label = section.settings.hero_primary_button_label
+  assign primary_link = section.settings.hero_primary_button_link
+  assign secondary_label = section.settings.hero_secondary_button_label
+  assign secondary_link = section.settings.hero_secondary_button_link
+
+  assign banner_blocks = section.blocks | where: 'type', 'banner'
+  assign product_blocks = section.blocks | where: 'type', 'product_showcase'
+  assign category_blocks = section.blocks | where: 'type', 'category'
+  assign testimonial_blocks = section.blocks | where: 'type', 'testimonial'
+  assign program_blocks = section.blocks | where: 'type', 'program'
+
+  assign banner_count = banner_blocks.size
+  assign banner_columns = 'md:grid-cols-2'
+  if banner_count > 2
+    assign banner_columns = 'md:grid-cols-3'
+  endif
+
+  assign category_count = category_blocks.size
+  assign category_columns = 'sm:grid-cols-2 lg:grid-cols-4'
+  if category_count == 1
+    assign category_columns = 'md:grid-cols-1'
+  elsif category_count == 2
+    assign category_columns = 'sm:grid-cols-2 lg:grid-cols-2'
+  elsif category_count == 3
+    assign category_columns = 'sm:grid-cols-2 lg:grid-cols-3'
+  endif
+
+  assign testimonial_columns = 'md:grid-cols-2'
+  if testimonial_blocks.size == 1
+    assign testimonial_columns = 'md:grid-cols-1'
+  endif
+
+  assign program_columns = 'md:grid-cols-3'
+  if program_blocks.size == 1
+    assign program_columns = 'md:grid-cols-1'
+  elsif program_blocks.size == 2
+    assign program_columns = 'md:grid-cols-2'
+  endif
+-%}
+
+<section class="hana-homepage space-y-24 bg-white text-neutral-900">
+  <div class="relative isolate overflow-hidden bg-rose-50">
+    {% if hero_image %}
+      <picture>
+        {% if hero_image_mobile %}
+          <source
+            media="(max-width: 767px)"
+            srcset="{{ hero_image_mobile | image_url: width: 1200 }}"
+          >
+        {% endif %}
+        <img
+          src="{{ hero_image | image_url: width: 2000 }}"
+          alt="{{ hero_heading | default: shop.name | escape }}"
+          loading="lazy"
+          class="absolute inset-0 h-full w-full object-cover"
+        >
+      </picture>
+      <div class="absolute inset-0 bg-white/40"></div>
+    {% else %}
+      <div class="absolute inset-0 bg-gradient-to-br from-rose-50 via-white to-rose-100"></div>
+    {% endif %}
+
+    <div class="relative mx-auto flex max-w-7xl flex-col gap-8 px-6 py-24 sm:px-8 lg:flex-row lg:items-end lg:justify-between lg:py-32 lg:px-12">
+      <div class="max-w-xl space-y-6 rounded-3xl bg-white/80 p-10 shadow-xl backdrop-blur">
+        {% if hero_badge != blank %}
+          <span class="inline-flex items-center rounded-full bg-rose-100 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-rose-500">
+            {{ hero_badge }}
+          </span>
+        {% endif %}
+
+        {% if hero_heading != blank %}
+          <h1 class="text-4xl font-semibold leading-tight tracking-tight text-neutral-900 sm:text-5xl">
+            {{ hero_heading }}
+          </h1>
+        {% endif %}
+
+        {% if hero_subheading != blank %}
+          <p class="text-lg font-medium text-rose-400">
+            {{ hero_subheading }}
+          </p>
+        {% endif %}
+
+        {% if hero_description != blank %}
+          <div class="space-y-4 text-base leading-relaxed text-neutral-600">
+            {{ hero_description }}
+          </div>
+        {% endif %}
+
+        {% if primary_label != blank or secondary_label != blank %}
+          <div class="flex flex-wrap gap-4 pt-4">
+            {% if primary_label != blank and primary_link != blank %}
+              <a
+                href="{{ primary_link }}"
+                class="inline-flex items-center justify-center rounded-full bg-neutral-900 px-8 py-3 text-sm font-semibold tracking-wide text-white transition hover:bg-neutral-800"
+              >
+                {{ primary_label }}
+              </a>
+            {% endif %}
+            {% if secondary_label != blank and secondary_link != blank %}
+              <a
+                href="{{ secondary_link }}"
+                class="inline-flex items-center justify-center rounded-full border border-neutral-900/20 px-8 py-3 text-sm font-semibold tracking-wide text-neutral-900 transition hover:border-neutral-900 hover:text-neutral-700"
+              >
+                {{ secondary_label }}
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if section.settings.hero_side_image %}
+        <div class="relative hidden max-w-md shrink-0 overflow-hidden rounded-[2.5rem] bg-white/40 p-6 shadow-xl backdrop-blur-sm lg:block">
+          <img
+            src="{{ section.settings.hero_side_image | image_url: width: 900 }}"
+            alt="{{ section.settings.hero_side_image.alt | default: hero_heading | escape }}"
+            loading="lazy"
+            class="h-full w-full rounded-[2rem] object-cover"
+          >
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if banner_blocks.size > 0 %}
+    <section class="hana-section">
+      <div class="mx-auto max-w-7xl space-y-10 px-6 sm:px-8 lg:px-12">
+        <div class="space-y-4 text-center">
+          {% if section.settings.banner_section_title != blank %}
+            <h2 class="text-3xl font-semibold text-neutral-900">
+              {{ section.settings.banner_section_title }}
+            </h2>
+          {% endif %}
+          {% if section.settings.banner_section_subheading != blank %}
+            <p class="text-base text-neutral-600">
+              {{ section.settings.banner_section_subheading }}
+            </p>
+          {% endif %}
+        </div>
+        <div class="grid gap-6 {{ banner_columns }}">
+          {% for block in banner_blocks %}
+            <article
+              class="group relative overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-rose-100 transition hover:-translate-y-1 hover:shadow-xl"
+              {{ block.shopify_attributes }}
+            >
+              {% if block.settings.image %}
+                <div class="aspect-[4/3] overflow-hidden">
+                  <picture>
+                    {% if block.settings.mobile_image %}
+                      <source
+                        media="(max-width: 767px)"
+                        srcset="{{ block.settings.mobile_image | image_url: width: 1200 }}"
+                      >
+                    {% endif %}
+                    <img
+                      src="{{ block.settings.image | image_url: width: 1600 }}"
+                      alt="{{ block.settings.heading | escape }}"
+                      loading="lazy"
+                      class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                    >
+                  </picture>
+                </div>
+              {% endif %}
+              <div class="space-y-3 px-8 py-10">
+                {% if block.settings.eyebrow != blank %}
+                  <span class="text-xs font-semibold uppercase tracking-[0.3em] text-rose-400">
+                    {{ block.settings.eyebrow }}
+                  </span>
+                {% endif %}
+                {% if block.settings.heading != blank %}
+                  <h3 class="text-2xl font-semibold text-neutral-900">
+                    {{ block.settings.heading }}
+                  </h3>
+                {% endif %}
+                {% if block.settings.body != blank %}
+                  <p class="text-sm leading-relaxed text-neutral-600">
+                    {{ block.settings.body }}
+                  </p>
+                {% endif %}
+                {% if block.settings.link_label != blank and block.settings.link_url != blank %}
+                  <a
+                    href="{{ block.settings.link_url }}"
+                    class="inline-flex items-center text-sm font-medium text-rose-500 transition hover:text-rose-600"
+                  >
+                    {{ block.settings.link_label }}
+                    <span class="ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
+                  </a>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {% if product_blocks.size > 0 %}
+    {% for block in product_blocks %}
+      {% liquid
+        assign selected_collection = collections[block.settings.collection]
+        assign tag_string = block.settings.product_tags | default: ''
+        assign tags = tag_string | split: ',' | map: 'strip' | compact
+        assign limit = block.settings.max_products | default: 4
+        assign count = 0
+        if selected_collection and selected_collection.products_count > 0
+          for product in selected_collection.products
+            assign include_product = true
+            if tags.size > 0
+              assign include_product = false
+              for tag in tags
+                if tag != blank and product.tags contains tag
+                  assign include_product = true
+                  break
+                endif
+              endfor
+            endif
+            if include_product
+              assign count = count | plus: 1
+              if count >= limit
+                break
+              endif
+            endif
+          endfor
+        endif
+      %}
+      <section class="hana-section" {{ block.shopify_attributes }}>
+        <div class="mx-auto max-w-7xl space-y-10 px-6 sm:px-8 lg:px-12">
+          <div class="flex flex-col gap-4 text-center lg:flex-row lg:items-end lg:justify-between lg:text-left">
+            <div class="space-y-2">
+              {% if block.settings.heading != blank %}
+                <h2 class="text-3xl font-semibold text-neutral-900">
+                  {{ block.settings.heading }}
+                </h2>
+              {% endif %}
+              {% if block.settings.subheading != blank %}
+                <p class="text-base text-neutral-600">
+                  {{ block.settings.subheading }}
+                </p>
+              {% endif %}
+            </div>
+            {% if block.settings.cta_label != blank and block.settings.cta_url != blank %}
+              <a
+                href="{{ block.settings.cta_url }}"
+                class="inline-flex items-center justify-center self-center rounded-full border border-neutral-900/20 px-6 py-2 text-sm font-semibold text-neutral-900 transition hover:border-neutral-900 hover:text-neutral-700 lg:self-auto"
+              >
+                {{ block.settings.cta_label }}
+              </a>
+            {% endif %}
+          </div>
+
+          {% if selected_collection == nil %}
+            <div class="rounded-3xl border border-dashed border-neutral-200 bg-neutral-50 p-12 text-center text-sm text-neutral-500">
+              {{ 'homepage.onboarding.no_collection' | t }}
+            </div>
+          {% elsif count == 0 %}
+            <div class="rounded-3xl border border-rose-100 bg-rose-50/60 p-12 text-center text-sm text-neutral-500">
+              {{ 'collections.general.no_matches' | t }}
+            </div>
+          {% else %}
+            <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-{{ block.settings.desktop_columns | default: 4 }}">
+              {% assign rendered = 0 %}
+              {% for product in selected_collection.products %}
+                {% if rendered >= limit %}
+                  {% break %}
+                {% endif %}
+                {% liquid
+                  assign include_product = true
+                  if tags.size > 0
+                    assign include_product = false
+                    for tag in tags
+                      if tag != blank and product.tags contains tag
+                        assign include_product = true
+                        break
+                      endif
+                    endfor
+                  endif
+                %}
+                {% if include_product %}
+                  {% assign rendered = rendered | plus: 1 %}
+                  <article class="group flex flex-col overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+                    <a href="{{ product.url }}" class="relative block overflow-hidden">
+                      {% if product.featured_media %}
+                        <img
+                          src="{{ product.featured_media | image_url: width: 900 }}"
+                          alt="{{ product.featured_media.alt | default: product.title | escape }}"
+                          loading="lazy"
+                          class="h-72 w-full object-cover transition duration-700 group-hover:scale-105"
+                        >
+                      {% else %}
+                        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg w-full h-72 bg-rose-50' }}
+                      {% endif %}
+                    </a>
+                    <div class="flex flex-1 flex-col gap-4 px-6 py-6">
+                      <div class="space-y-2">
+                        <h3 class="text-lg font-semibold text-neutral-900">
+                          <a href="{{ product.url }}" class="hover:text-rose-500">{{ product.title }}</a>
+                        </h3>
+                        {% if product.metafields.descriptors.subtitle != blank %}
+                          <p class="text-sm text-neutral-500">
+                            {{ product.metafields.descriptors.subtitle }}
+                          </p>
+                        {% endif %}
+                      </div>
+                      <div class="mt-auto flex items-center justify-between text-sm text-neutral-900">
+                        <span class="font-semibold">
+                          {{ product.price | money_with_currency }}
+                        </span>
+                        {% if product.compare_at_price > product.price %}
+                          <span class="text-rose-400 line-through">
+                            {{ product.compare_at_price | money_with_currency }}
+                          </span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </article>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </section>
+    {% endfor %}
+  {% endif %}
+
+  {% if category_blocks.size > 0 %}
+    <section class="hana-section">
+      <div class="mx-auto max-w-7xl space-y-10 px-6 sm:px-8 lg:px-12">
+        <div class="space-y-4 text-center">
+          {% if section.settings.category_heading != blank %}
+            <h2 class="text-3xl font-semibold text-neutral-900">
+              {{ section.settings.category_heading }}
+            </h2>
+          {% endif %}
+          {% if section.settings.category_subheading != blank %}
+            <p class="text-base text-neutral-600">
+              {{ section.settings.category_subheading }}
+            </p>
+          {% endif %}
+        </div>
+        <div class="grid gap-6 {{ category_columns }}">
+          {% for block in category_blocks %}
+            <article
+              class="group overflow-hidden rounded-3xl border border-rose-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+              {{ block.shopify_attributes }}
+            >
+              {% if block.settings.image %}
+                <div class="aspect-[4/5] overflow-hidden">
+                  <img
+                    src="{{ block.settings.image | image_url: width: 900 }}"
+                    alt="{{ block.settings.title | escape }}"
+                    loading="lazy"
+                    class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                  >
+                </div>
+              {% endif %}
+              <div class="space-y-2 px-6 py-8">
+                {% if block.settings.eyebrow != blank %}
+                  <span class="text-xs font-semibold uppercase tracking-[0.2em] text-rose-400">
+                    {{ block.settings.eyebrow }}
+                  </span>
+                {% endif %}
+                {% if block.settings.title != blank %}
+                  <h3 class="text-xl font-semibold text-neutral-900">
+                    {{ block.settings.title }}
+                  </h3>
+                {% endif %}
+                {% if block.settings.body != blank %}
+                  <p class="text-sm text-neutral-600">
+                    {{ block.settings.body }}
+                  </p>
+                {% endif %}
+                {% if block.settings.link_url != blank and block.settings.link_label != blank %}
+                  <a
+                    href="{{ block.settings.link_url }}"
+                    class="inline-flex items-center text-sm font-medium text-rose-500 transition hover:text-rose-600"
+                  >
+                    {{ block.settings.link_label }}
+                    <span class="ml-2 transition-transform group-hover:translate-x-1">&rarr;</span>
+                  </a>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {% if testimonial_blocks.size > 0 %}
+    <section class="hana-section">
+      <div class="mx-auto max-w-7xl space-y-10 px-6 sm:px-8 lg:px-12">
+        <div class="space-y-4 text-center">
+          {% if section.settings.testimonials_heading != blank %}
+            <h2 class="text-3xl font-semibold text-neutral-900">
+              {{ section.settings.testimonials_heading }}
+            </h2>
+          {% endif %}
+          {% if section.settings.testimonials_subheading != blank %}
+            <p class="text-base text-neutral-600">
+              {{ section.settings.testimonials_subheading }}
+            </p>
+          {% endif %}
+        </div>
+        <div class="grid gap-8 {{ testimonial_columns }}">
+          {% for block in testimonial_blocks %}
+            <article
+              class="flex h-full flex-col justify-between rounded-3xl border border-rose-100 bg-white p-10 text-left shadow-sm"
+              {{ block.shopify_attributes }}
+            >
+              <div class="space-y-6">
+                {% if block.settings.rating > 0 %}
+                  <div class="flex items-center gap-1 text-rose-400" aria-hidden="true">
+                    {% for i in (1..block.settings.rating) %}
+                      <span>★</span>
+                    {% endfor %}
+                  </div>
+                  <span class="sr-only">{{ block.settings.rating }} / 5</span>
+                {% endif %}
+                {% if block.settings.quote != blank %}
+                  <blockquote class="text-base leading-relaxed text-neutral-700">
+                    “{{ block.settings.quote }}”
+                  </blockquote>
+                {% endif %}
+              </div>
+              <div class="mt-8 space-y-1">
+                {% if block.settings.author != blank %}
+                  <p class="text-sm font-semibold text-neutral-900">
+                    {{ block.settings.author }}
+                  </p>
+                {% endif %}
+                {% if block.settings.author_role != blank %}
+                  <p class="text-xs uppercase tracking-[0.2em] text-neutral-500">
+                    {{ block.settings.author_role }}
+                  </p>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {% if program_blocks.size > 0 %}
+    <section class="hana-section">
+      <div class="mx-auto max-w-7xl space-y-10 px-6 sm:px-8 lg:px-12">
+        <div class="space-y-4 text-center">
+          {% if section.settings.programs_heading != blank %}
+            <h2 class="text-3xl font-semibold text-neutral-900">
+              {{ section.settings.programs_heading }}
+            </h2>
+          {% endif %}
+          {% if section.settings.programs_subheading != blank %}
+            <p class="text-base text-neutral-600">
+              {{ section.settings.programs_subheading }}
+            </p>
+          {% endif %}
+        </div>
+        <div class="grid gap-6 {{ program_columns }}">
+          {% for block in program_blocks %}
+            <div {{ block.shopify_attributes }}>
+              {% render 'hana-program-card',
+                icon: block.settings.icon,
+                title: block.settings.title,
+                text: block.settings.body,
+                link_label: block.settings.link_label,
+                link_url: block.settings.link_url
+              %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "Hana homepage",
+  "settings": [
+    {
+      "type": "text",
+      "id": "hero_badge",
+      "label": "Hero badge",
+      "default": "Hana Beauty"
+    },
+    {
+      "type": "text",
+      "id": "hero_heading",
+      "label": "Hero heading",
+      "default": "Beleza com sofisticação e cuidado"
+    },
+    {
+      "type": "text",
+      "id": "hero_subheading",
+      "label": "Hero subheading",
+      "default": "Experiência premium e resultados reais"
+    },
+    {
+      "type": "richtext",
+      "id": "hero_description",
+      "label": "Hero description",
+      "default": "<p>Descubra tratamentos, fragrâncias e rituais que revelam sua melhor versão. Produtos selecionados com curadoria especialista e foco em performance.</p>"
+    },
+    {
+      "type": "text",
+      "id": "hero_primary_button_label",
+      "label": "Hero primary button label",
+      "default": "Comprar agora"
+    },
+    {
+      "type": "url",
+      "id": "hero_primary_button_link",
+      "label": "Hero primary button link"
+    },
+    {
+      "type": "text",
+      "id": "hero_secondary_button_label",
+      "label": "Hero secondary button label",
+      "default": "Conheça a marca"
+    },
+    {
+      "type": "url",
+      "id": "hero_secondary_button_link",
+      "label": "Hero secondary button link"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_background",
+      "label": "Hero background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_background_mobile",
+      "label": "Hero background image (mobile)"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_side_image",
+      "label": "Hero side image"
+    },
+    {
+      "type": "text",
+      "id": "banner_section_title",
+      "label": "Banner section heading",
+      "default": "Destaques da semana"
+    },
+    {
+      "type": "textarea",
+      "id": "banner_section_subheading",
+      "label": "Banner section subheading",
+      "default": "Curadoria exclusiva com benefícios especiais."
+    },
+    {
+      "type": "text",
+      "id": "category_heading",
+      "label": "Categories heading",
+      "default": "Compre por categoria"
+    },
+    {
+      "type": "textarea",
+      "id": "category_subheading",
+      "label": "Categories subheading",
+      "default": "Encontre o ritual perfeito para o seu momento."
+    },
+    {
+      "type": "text",
+      "id": "testimonials_heading",
+      "label": "Testimonials heading",
+      "default": "Depoimentos reais"
+    },
+    {
+      "type": "textarea",
+      "id": "testimonials_subheading",
+      "label": "Testimonials subheading",
+      "default": "Clientes que vivem a experiência Hana Beauty."
+    },
+    {
+      "type": "text",
+      "id": "programs_heading",
+      "label": "Programs heading",
+      "default": "Programas Hana"
+    },
+    {
+      "type": "textarea",
+      "id": "programs_subheading",
+      "label": "Programs subheading",
+      "default": "Descubra benefícios exclusivos para a sua rotina."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Etiqueta",
+          "default": "Novo"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Título",
+          "default": "Skincare de alta performance"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Descrição",
+          "default": "Tratamentos clínicos para resultados imediatos e duradouros."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem desktop"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "Imagem mobile"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Texto do link",
+          "default": "Ver coleção"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "product_showcase",
+      "name": "Vitrine de produtos",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Título",
+          "default": "Coleção em destaque"
+        },
+        {
+          "type": "textarea",
+          "id": "subheading",
+          "label": "Subtítulo",
+          "default": "Seleção dos queridinhos Hana Beauty."
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Coleção"
+        },
+        {
+          "type": "text",
+          "id": "product_tags",
+          "label": "Filtrar por tags (separe por vírgula)",
+          "info": "Use para destacar produtos com tags específicas, como 'best-seller' ou 'destaque'."
+        },
+        {
+          "type": "range",
+          "id": "max_products",
+          "label": "Limite de produtos",
+          "default": 4,
+          "min": 2,
+          "max": 12,
+          "step": 1
+        },
+        {
+          "type": "select",
+          "id": "desktop_columns",
+          "label": "Colunas no desktop",
+          "default": "4",
+          "options": [
+            { "value": "2", "label": "2" },
+            { "value": "3", "label": "3" },
+            { "value": "4", "label": "4" }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "Texto do botão",
+          "default": "Ver coleção completa"
+        },
+        {
+          "type": "url",
+          "id": "cta_url",
+          "label": "Link do botão"
+        }
+      ]
+    },
+    {
+      "type": "category",
+      "name": "Categoria",
+      "settings": [
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Etiqueta",
+          "default": "Categoria"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Cuidados faciais"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Descrição",
+          "default": "Protocolos completos para uma pele saudável e iluminada."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagem"
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Texto do link",
+          "default": "Explorar"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link"
+        }
+      ]
+    },
+    {
+      "type": "testimonial",
+      "name": "Depoimento",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Avaliação (0-5)",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Depoimento",
+          "default": "Os resultados apareceram na primeira semana. Atendimento incrível e produtos maravilhosos!"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Nome",
+          "default": "Mariana Lopes"
+        },
+        {
+          "type": "text",
+          "id": "author_role",
+          "label": "Cargo ou localização",
+          "default": "Cliente Hana Club"
+        }
+      ]
+    },
+    {
+      "type": "program",
+      "name": "Programa",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Ícone"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Título",
+          "default": "Clube da Hana"
+        },
+        {
+          "type": "textarea",
+          "id": "body",
+          "label": "Descrição",
+          "default": "Acumule pontos a cada compra e troque por experiências exclusivas."
+        },
+        {
+          "type": "text",
+          "id": "link_label",
+          "label": "Texto do link",
+          "default": "Saiba mais"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hana homepage",
+      "blocks": [
+        {
+          "type": "banner"
+        },
+        {
+          "type": "banner"
+        },
+        {
+          "type": "product_showcase"
+        },
+        {
+          "type": "product_showcase"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "program"
+        },
+        {
+          "type": "program"
+        },
+        {
+          "type": "program"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
