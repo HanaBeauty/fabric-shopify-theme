@@ -1,0 +1,120 @@
+{% liquid
+  assign faq_metafield = product.metafields.custom.seo_faq | default: product.metafields.custom.faq
+  assign faq_entries = nil
+
+  if faq_metafield == blank
+    assign faq_entries = nil
+  elsif faq_metafield.value
+    assign faq_entries = faq_metafield.value
+  else
+    assign faq_entries = faq_metafield
+  endif
+%}
+
+{% if faq_entries != blank %}
+  <section class="hb-faq" aria-labelledby="hb-faq-heading-{{ section.id | default: block.id | default: product.id }}">
+    <div class="hb-faq__inner">
+      <h2 class="hb-faq__title" id="hb-faq-heading-{{ section.id | default: block.id | default: product.id }}">
+        Perguntas frequentes sobre {{ product.title | strip_html }}
+      </h2>
+
+      <div class="hb-faq__items">
+        {%- for entry in faq_entries -%}
+          {% liquid
+            assign question = entry.question | default: entry.title | default: entry.heading | default: entry | strip_html
+          %}
+
+          {% capture answer_markup %}
+            {% if entry.answer != blank %}
+              {{ entry.answer | metafield_tag }}
+            {% elsif entry.content != blank %}
+              {{ entry.content | metafield_tag }}
+            {% elsif entry.response != blank %}
+              {{ entry.response | metafield_tag }}
+            {% elsif entry.description != blank %}
+              {{ entry.description | metafield_tag }}
+            {% endif %}
+          {% endcapture %}
+
+          {% assign answer_markup = answer_markup | strip %}
+
+          {% if question != blank and answer_markup != blank %}
+            <details class="hb-faq__item">
+              <summary class="hb-faq__summary">{{ question | escape }}</summary>
+              <div class="hb-faq__content">
+                {{ answer_markup }}
+              </div>
+            </details>
+          {% endif %}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% stylesheet %}
+  .hb-faq {
+    margin-block: 2rem 1rem;
+    border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    padding-top: 1.5rem;
+  }
+
+  .hb-faq__inner {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .hb-faq__title {
+    font-size: clamp(1.4rem, 1.25rem + 0.5vw, 1.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .hb-faq__items {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .hb-faq__item {
+    border-radius: 12px;
+    border: 1px solid rgb(var(--color-foreground-rgb) / 0.08);
+    padding: 0.75rem 1rem;
+    background: rgb(var(--color-background-rgb));
+  }
+
+  .hb-faq__summary {
+    cursor: pointer;
+    font-weight: 600;
+    outline: none;
+  }
+
+  .hb-faq__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .hb-faq__summary::after {
+    content: '+';
+    float: inline-end;
+    transition: transform 0.2s ease;
+  }
+
+  .hb-faq__item[open] .hb-faq__summary::after {
+    content: '–';
+  }
+
+  .hb-faq__content {
+    margin-top: 0.75rem;
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-subdued-text));
+    line-height: 1.55;
+  }
+
+  @media (min-width: 990px) {
+    .hb-faq__inner {
+      gap: 1.5rem;
+    }
+
+    .hb-faq__items {
+      gap: 1rem;
+    }
+  }
+{% endstylesheet %}

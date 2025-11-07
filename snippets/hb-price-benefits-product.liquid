@@ -1,0 +1,49 @@
+{% liquid
+  assign product_resource = product
+  assign initial_variant = product_resource.selected_or_first_available_variant
+  assign initial_price = initial_variant.price | default: product_resource.price
+%}
+{% if product_resource and initial_price %}
+  <div
+    class="hb-benefits"
+    data-hb-benefits
+    data-hb-price="{{ initial_price }}"
+    aria-live="polite"
+  >
+    <p class="hb-benefits__summary">
+      <span class="hb-benefits__price">{{ initial_price | money }}</span>
+      <span class="hb-benefits__installments"></span>
+      <span class="hb-benefits__points"></span>
+    </p>
+
+    <details class="hb-benefits__details">
+      <summary
+        class="hb-benefits__summary-button"
+        aria-controls="hb-benefits-table-{{ section.id | default: 'default' }}"
+      >
+        Ver todas as parcelas
+      </summary>
+      <div class="hb-benefits__table-wrap">
+        <table
+          class="hb-benefits__table"
+          id="hb-benefits-table-{{ section.id | default: 'default' }}"
+        >
+          <caption class="sr-only">
+            Tabela de parcelas de 1 a 12 vezes com juros progressivos a partir de 7x
+          </caption>
+          <thead>
+            <tr>
+              <th>Parcelas</th>
+              <th>Valor</th>
+              <th>Total</th>
+              <th>Juros</th>
+            </tr>
+          </thead>
+          <tbody data-hb-table-body></tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <script src="{{ 'hb-price-benefits.js' | asset_url }}" defer></script>
+{% endif %}
