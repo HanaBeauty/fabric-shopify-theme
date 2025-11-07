@@ -27,6 +27,7 @@
     {% content_for 'blocks' %}
     {% if request.page_type == 'product' %}
       {% render 'hb-professional-program', product: product, section: section, block: block %}
+      {% render 'hb-seo-faq', product: product, section: section, block: block %}
     {% endif %}
   {% endcapture %}
 
