@@ -1,0 +1,115 @@
+{% liquid
+  assign product_resource = product
+  assign initial_variant = product_resource.selected_or_first_available_variant
+%}
+{% if product_resource %}
+  <div
+    class="hana-pro-cta"
+    data-hb-pro-program
+    data-product-title="{{ product_resource.title | strip_html | escape }}"
+    data-product-sku="{{ initial_variant.sku | default: '' | escape }}"
+    data-whatsapp-phone="15558043916"
+  >
+    <div class="hana-pro-cta__header">
+      <span class="hana-pro-badge">Programa Profissional</span>
+      <h2 class="hana-pro-title">Condições especiais para negócios</h2>
+      <p class="hana-pro-sub">
+        Fale com o time Hana PRO e negocie volumes recorrentes com atendimento consultivo exclusivo.
+      </p>
+    </div>
+
+    <ul class="hana-pro-benefits">
+      <li>Planos sob medida para compra em volume</li>
+      <li>Suporte técnico dedicado e prioritário</li>
+      <li>Programação de entregas frequentes</li>
+      <li>Pontos extras no programa de fidelidade</li>
+    </ul>
+
+    <form class="hana-pro-form" onsubmit="return false;">
+      <div class="hana-pro-field">
+        <label for="hb-pro-volume-{{ section.id | default: block.id | default: 'global' }}">Volume mensal desejado</label>
+        <div class="hana-pro-control">
+          <select
+            id="hb-pro-volume-{{ section.id | default: block.id | default: 'global' }}"
+            class="hana-pro-select"
+            data-hb-pro-volume
+          >
+            <option value="">Selecione uma opção</option>
+            <option value="6">Até 6 unidades</option>
+            <option value="12">7 a 12 unidades</option>
+            <option value="24">13 a 24 unidades</option>
+            <option value="48">25 a 48 unidades</option>
+            <option value="custom">Outro volume</option>
+          </select>
+        </div>
+        <input
+          type="number"
+          min="1"
+          step="1"
+          class="hana-pro-input"
+          data-hb-pro-volume-custom
+          hidden
+          placeholder="Informe a quantidade"
+        >
+      </div>
+
+      <div class="hana-pro-field">
+        <label for="hb-pro-frequency-{{ section.id | default: block.id | default: 'global' }}">Frequência de compra</label>
+        <div class="hana-pro-control">
+          <select
+            id="hb-pro-frequency-{{ section.id | default: block.id | default: 'global' }}"
+            class="hana-pro-select"
+            data-hb-pro-frequency
+          >
+            <option value="Mensal">Mensal</option>
+            <option value="Bimestral">Bimestral</option>
+            <option value="Trimestral">Trimestral</option>
+            <option value="Sob demanda">Sob demanda</option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <div class="hana-pro-meta">
+      <span class="hana-pro-chip">
+        <svg
+          class="hana-pro-icon"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M20.52 3.48A12 12 0 1 0 12 24a11.9 11.9 0 0 0 5.42-1.3l3.57.94a1 1 0 0 0 1.22-1.22l-.94-3.57A11.9 11.9 0 0 0 24 12a11.9 11.9 0 0 0-3.48-8.52Z"
+            fill="currentColor"
+            opacity="0.12"
+          ></path>
+          <path
+            d="M12 2a10 10 0 1 0 4.53 18.88l2.78.73a.5.5 0 0 0 .61-.61l-.73-2.78A10 10 0 0 0 12 2Zm5.45 14.5c-.22.62-1.27 1.18-1.77 1.25-.47.07-1.07.1-1.74-.11-.41-.13-.94-.31-1.61-.61-2.83-1.23-4.67-4.07-4.81-4.26s-1.15-1.53-1.15-2.92.73-2.07.99-2.36.64-.47.86-.47h.63c.2 0 .48-.08.75.57.27.65.93 2.25 1.01 2.41a.62.62 0 0 1 .03.57c-.13.27-.44.55-.63.72-.2.17-.41.37-.18.72s.92 1.51 1.97 2.45c1.35 1.2 2.49 1.58 2.84 1.76s.55.17.75-.1c.2-.27.86-1 1.09-1.35s.45-.3.75-.17 1.94.91 2.28 1.07.55.25.63.39c.08.14.08.82-.14 1.44Z"
+            fill="currentColor"
+          ></path>
+        </svg>
+        Atendimento via WhatsApp
+      </span>
+      <span class="hana-pro-chip warn">Resposta em até 1 dia útil</span>
+    </div>
+
+    <a
+      class="hana-pro-btn"
+      href="https://api.whatsapp.com/send?phone=15558043916"
+      target="_blank"
+      rel="noopener"
+      data-hb-pro-whats
+    >
+      <span class="hana-pro-icon" aria-hidden="true">💬</span>
+      <span>Falar com especialista</span>
+    </a>
+
+    <p class="hana-pro-note">
+      Atendimento exclusivo para profissionais, distribuidores e compras recorrentes.
+    </p>
+  </div>
+
+  <script src="{{ 'hb-professional-program.js' | asset_url }}" defer></script>
+{% endif %}

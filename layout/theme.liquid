@@ -4,6 +4,29 @@
   lang="{{ request.locale.iso_code }}"
 >
   <head>
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+          'gtm.start': new Date().getTime(),
+          event: 'gtm.js',
+        });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', 'GTM-K7PJG6W');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <meta
+      name="google-site-verification"
+      content="SKGwqm6YZ8T4fcYTaOAvapgnkCkB1taetiypYOacqPw"
+    >
+
     {%- if settings.favicon != blank -%}
       <link
         rel="icon"
@@ -27,14 +50,94 @@
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-schemes' -%}
 
+    {%- if request.page_type == 'product' -%}
+      <link
+        rel="stylesheet"
+        href="{{ 'hb-price-benefits.css' | asset_url }}"
+        media="all"
+      >
+      <link
+        rel="stylesheet"
+        href="{{ 'hb-professional-program.css' | asset_url }}"
+        media="all"
+      >
+    {%- endif -%}
+
+    {%- if request.page_type == 'index' -%}
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": {{ shop.name | json }},
+          "url": {{ shop.url | json }},
+          {% if shop.brand.logo != blank %}
+            "logo": {{ shop.brand.logo | image_url: width: 512 | prepend: 'https:' | json }},
+          {% endif %}
+          "sameAs": [
+            {% if settings.social_twitter_link != blank %}
+              {{ settings.social_twitter_link | json }}{% if settings.social_instagram_link != blank or settings.social_facebook_link != blank %},{% endif %}
+            {% endif %}
+            {% if settings.social_instagram_link != blank %}
+              {{ settings.social_instagram_link | json }}{% if settings.social_facebook_link != blank %},{% endif %}
+            {% endif %}
+            {% if settings.social_facebook_link != blank %}
+              {{ settings.social_facebook_link | json }}
+            {% endif %}
+          ]
+        }
+      </script>
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": {{ shop.name | json }},
+          "url": {{ shop.url | json }},
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {{ shop.url | append: '/search?q={search_term_string}' | json }},
+            "query-input": "required name=search_term_string"
+          }
+        }
+      </script>
+    {%- endif -%}
+
     {% if request.design_mode %}
       {%- render 'theme-editor' -%}
     {% endif %}
 
     {{ content_for_header }}
+
+    <!-- Hotjar Tracking Code -->
+    <script>
+      (function (h, o, t, j, a, r) {
+        h.hj = h.hj || function () {
+          (h.hj.q = h.hj.q || []).push(arguments);
+        };
+        h._hjSettings = { hjid: 2685841, hjsv: 6 };
+        a = o.getElementsByTagName('head')[0];
+        r = o.createElement('script');
+        r.async = 1;
+        r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+        if (!a.querySelector('[data-hj-script]')) {
+          r.setAttribute('data-hj-script', 'true');
+          a.appendChild(r);
+        }
+      })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=');
+    </script>
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-K7PJG6W"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+      ></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
     <div id="header-group">
       {% sections 'header-group' %}
@@ -65,5 +168,204 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
+
+    {% render 'hb-contact-button' %}
+
+    {% if request.page_type == 'product' %}
+      <script src="{{ 'hb-shipping-toggle.js' | asset_url }}" defer></script>
+    {% endif %}
+
+    <!-- Freshworks – Tracking -->
+    <script>
+      (function (w, d) {
+        var DEBUG = false;
+        var EVT_LEAD = 'Lead Captado - Formulário';
+        var EVT_ADD_TO_CART = 'Added to cart';
+
+        function log() {
+          if (DEBUG && w.console) {
+            try {
+              w.console.log.apply(w.console, arguments);
+            } catch (error) {
+              // noop
+            }
+          }
+        }
+
+        function whenFwCrmReady(cb, i) {
+          i = i || 0;
+          if (w.fwcrm && (w.fwcrm.identify || w.fwcrm.set)) return cb();
+          if (i > 80) return;
+          setTimeout(function () {
+            whenFwCrmReady(cb, i + 1);
+          }, 150);
+        }
+
+        function whenFMReady(cb, i) {
+          i = i || 0;
+          if (w.FM && typeof w.FM.trackCustomEvent === 'function') return cb();
+          if (i > 80) return;
+          setTimeout(function () {
+            whenFMReady(cb, i + 1);
+          }, 150);
+        }
+
+        function getParam(name) {
+          try {
+            var value = new URLSearchParams(w.location.search).get(name);
+            return value || '';
+          } catch (error) {
+            return '';
+          }
+        }
+
+        function collectUTMs() {
+          return {
+            utm_source: getParam('utm_source'),
+            utm_medium: getParam('utm_medium'),
+            utm_campaign: getParam('utm_campaign'),
+            utm_content: getParam('utm_content'),
+            utm_term: getParam('utm_term'),
+          };
+        }
+
+        function hasValues(object) {
+          for (var key in object) {
+            if (object.hasOwnProperty(key) && object[key]) {
+              return true;
+            }
+          }
+          return false;
+        }
+
+        try {
+          var loggedEmail = {% if customer %}'{{ customer.email | escape }}'{% else %}null{% endif %};
+          var firstName = {% if customer %}'{{ customer.first_name | escape }}'{% else %}null{% endif %};
+          var lastName = {% if customer %}'{{ customer.last_name | escape }}'{% else %}null{% endif %};
+
+          if (loggedEmail) {
+            whenFwCrmReady(function () {
+              try {
+                w.fwcrm.identify(loggedEmail, {
+                  'First name': firstName || '',
+                  'Last name': lastName || '',
+                  Email: loggedEmail,
+                });
+                log('fwcrm.identify(login)', loggedEmail);
+              } catch (error) {
+                log('fwcrm.identify error', error);
+              }
+            });
+          }
+        } catch (error) {
+          log('Freshworks login error', error);
+        }
+
+        var utms = collectUTMs();
+        if (hasValues(utms)) {
+          whenFwCrmReady(function () {
+            try {
+              w.fwcrm.set(utms);
+              log('fwcrm.set(UTMs)', utms);
+            } catch (error) {
+              log('fwcrm.set error', error);
+            }
+          });
+        }
+
+        d.addEventListener(
+          'submit',
+          function (event) {
+            var form = event.target;
+            if (!form || form.__fwTracked) return;
+
+            var emailInput =
+              form.querySelector('input[type="email"], input[name="email"], input[name="contact[email]"], input[name="customer[email]"]');
+            var firstInput =
+              form.querySelector('input[name="contact[nome]"], input[name="first_name"], input[name="contact[first_name]"], input[name="customer[first_name]"]');
+            var lastInput =
+              form.querySelector('input[name="last_name"], input[name="contact[last_name]"], input[name="customer[last_name]"]');
+
+            var email = emailInput && emailInput.value ? emailInput.value.trim() : '';
+            if (!email) return;
+            var first = firstInput && firstInput.value ? firstInput.value.trim() : '';
+            var last = lastInput && lastInput.value ? lastInput.value.trim() : '';
+
+            whenFwCrmReady(function () {
+              try {
+                w.fwcrm.identify(email, {
+                  'First name': first,
+                  'Last name': last,
+                  Email: email,
+                  page: w.location.pathname,
+                });
+                log('fwcrm.identify(form)');
+              } catch (error) {
+                log('fwcrm.identify form error', error);
+              }
+            });
+
+            whenFMReady(function () {
+              try {
+                w.FM.trackCustomEvent(EVT_LEAD, {
+                  email: email,
+                  page_url: w.location.href,
+                  source: 'form:' + (form.id || form.name || 'unknown'),
+                });
+                log('FM.lead');
+              } catch (error) {
+                log('FM lead error', error);
+              }
+            });
+
+            form.__fwTracked = true;
+          },
+          true
+        );
+
+        d.addEventListener(
+          'submit',
+          function (event) {
+            var form = event.target;
+            if (!form || !form.matches('form[action*="/cart/add"]')) return;
+
+            try {
+              var fd = new FormData(form);
+              var variantId = fd.get('id') || '';
+              var qty = parseInt(fd.get('quantity') || '1', 10) || 1;
+              var title = '';
+              var og = d.querySelector('meta[property="og:title"]');
+              if (og) title = og.getAttribute('content') || '';
+              if (!title) {
+                var heading = d.querySelector('h1, .product__title, [itemprop="name"]');
+                if (heading) title = heading.textContent.trim();
+              }
+
+              whenFMReady(function () {
+                try {
+                  w.FM.trackCustomEvent(EVT_ADD_TO_CART, {
+                    title: title,
+                    variant_id: variantId,
+                    quantity: qty,
+                    page_url: w.location.href,
+                    currency: w.Shopify && Shopify.currency ? Shopify.currency.active : undefined,
+                  });
+                  log('FM.add_to_cart', {
+                    title: title,
+                    variantId: variantId,
+                    quantity: qty,
+                  });
+                } catch (error) {
+                  log('FM add_to_cart error', error);
+                }
+              });
+            } catch (error) {
+              log('Add to cart track error', error);
+            }
+          },
+          true
+        );
+      })(window, document);
+    </script>
   </body>
 </html>
