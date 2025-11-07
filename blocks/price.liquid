@@ -82,6 +82,10 @@
       {%- endform -%}
     </div>
   {%- endif -%}
+
+  {%- if request.page_type == 'product' -%}
+    {% render 'hb-price-benefits-product', product: product_resource, section: section, block: block %}
+  {%- endif -%}
 </product-price>
 
 {% # theme-check-disable %}

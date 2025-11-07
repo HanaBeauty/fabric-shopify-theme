@@ -1,0 +1,160 @@
+<div class="hb-contact" data-hb-contact>
+  <button
+    type="button"
+    class="hb-contact__toggle"
+    data-hb-contact-toggle
+    aria-expanded="false"
+  >
+    Precisa de ajuda?
+  </button>
+  <div class="hb-contact__panel" data-hb-contact-panel hidden>
+    <a
+      class="hb-contact__action hb-contact__action--whatsapp"
+      href="https://api.whatsapp.com/send?phone=15558043916&text=Ol%C3%A1%2C%20gostaria%20de%20falar%20com%20a%20Hana%20Beauty"
+      target="_blank"
+      rel="noopener"
+    >
+      <span aria-hidden="true">💬</span>
+      <span>Fale com a gente no WhatsApp</span>
+    </a>
+    <a
+      class="hb-contact__action"
+      href="mailto:contato@hanabeauty.com.br"
+    >
+      <span aria-hidden="true">✉️</span>
+      <span>Envie um e-mail</span>
+    </a>
+  </div>
+</div>
+
+<style>
+  .hb-contact {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+  }
+
+  .hb-contact__toggle {
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #c6a34f, #f5d57c);
+    color: #1d1d1d;
+    font-weight: 700;
+    padding: 0.85rem 1.5rem;
+    box-shadow: 0 12px 30px rgba(31, 26, 10, 0.28);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .hb-contact__toggle:hover,
+  .hb-contact__toggle:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(31, 26, 10, 0.36);
+    outline: none;
+  }
+
+  .hb-contact__panel {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18);
+    padding: 0.75rem;
+    width: min(260px, 80vw);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .hb-contact__action {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: #2a2a2a;
+    background: #f5f5f5;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .hb-contact__action:hover,
+  .hb-contact__action:focus {
+    background: #ece8de;
+    transform: translateX(-2px);
+    outline: none;
+  }
+
+  .hb-contact__action--whatsapp {
+    background: #e8fff1;
+    color: #1c7b41;
+  }
+
+  .hb-contact__action--whatsapp:hover,
+  .hb-contact__action--whatsapp:focus {
+    background: #d7f7e3;
+    color: #0f5e2c;
+  }
+
+  @media (max-width: 749px) {
+    .hb-contact {
+      right: 1rem;
+      bottom: 1rem;
+    }
+
+    .hb-contact__toggle {
+      padding: 0.75rem 1.35rem;
+      font-size: 0.95rem;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    var root = document.querySelector('[data-hb-contact]');
+    if (!root) return;
+    var toggle = root.querySelector('[data-hb-contact-toggle]');
+    var panel = root.querySelector('[data-hb-contact-panel]');
+    if (!toggle || !panel) return;
+
+    var hasTriggeredEvent = false;
+
+    function fireGtmEvent() {
+      if (hasTriggeredEvent) return;
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'contact_hub_open', {
+          event_category: 'engagement',
+          event_label: 'floating_button',
+        });
+        hasTriggeredEvent = true;
+      } else if (Array.isArray(window.dataLayer)) {
+        window.dataLayer.push({
+          event: 'contact_hub_open',
+          event_category: 'engagement',
+          event_label: 'floating_button',
+        });
+        hasTriggeredEvent = true;
+      }
+    }
+
+    toggle.addEventListener('click', function () {
+      var isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!isExpanded));
+      panel.hidden = isExpanded;
+      if (!isExpanded) {
+        fireGtmEvent();
+      }
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!root.contains(event.target) && toggle.getAttribute('aria-expanded') === 'true') {
+        toggle.setAttribute('aria-expanded', 'false');
+        panel.hidden = true;
+      }
+    });
+  })();
+</script>
